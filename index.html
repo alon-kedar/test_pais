@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lottery Score Widget</title>
+    <link rel="stylesheet" href="styles.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="lottery-widget">
+        <h2>Lottery Score</h2>
+        <label for="lottery-date">Select Date:</label>
+        <select id="lottery-date">
+        </select>
+
+        <div id="lottery-result">
+            <p>Select a date to view the lottery score.</p>
+        </div>
+		<h2>string number</h2>
+		<div id="strong-number"></div>
+    </div>
+</body>
+</html>
+
+<script>
+	document.addEventListener("DOMContentLoaded", function() {
+		const lotteryDateSelect = document.getElementById('lottery-date');
+		const lotteryResultDiv = document.getElementById('lottery-result');
+
+		var xhttp = new XMLHttpRequest();
+		let lotteryData = [];
+
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+			  
+			  //var html = JSON.parse(this.responseText);
+			  let html = getHtml()
+			 
+			  console.log(getResults(html))
+			 
+			  lotteryData.push(...getResults(html))
+			  console.log(lotteryData)
+
+				// Populate the dropdown with dates
+				lotteryData.forEach(function(data) {
+					const option = document.createElement('option');
+					option.value = data.date;
+					option.textContent = data.date;
+					lotteryDateSelect.appendChild(option);
+				});
+				
+				lotteryDateSelect.value = lotteryData[0].date
+				lotteryDateSelect.dispatchEvent(new Event('change'));
+			}
+		};
+
+		let today = new Date()
+		today = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`
+		//xhttp.open("GET", "https://www.pais.co.il/lotto/showMoreResults.aspx?fromIndex=0&amount=49&fromDate=01/01/2018&toDate=" + today);
+		xhttp.open("GET", "https://script.google.com/macros/s/AKfycbxN1vKGIJFH-KF0X17_gNyz6snTN_eH4vEJ_xvNcHM/dev");
+		//xhttp.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+		xhttp.setRequestHeader('Access-Control-Allow-Origin', '*');
+		xhttp.send();
+		
+		// Array of sample lottery dates and scores
+
+
+
+
+		// Show the lottery result when a date is selected
+		lotteryDateSelect.addEventListener('change', function() {
+
+			const selectedDate = lotteryDateSelect.value;
+
+			const result = lotteryData.find(data => data.date === selectedDate);
+
+
+			if (result) {
+				lotteryResultDiv.innerHTML = `<p>Lottery Score: <strong>${result.score}</strong></p>`;
+			} else {
+				lotteryResultDiv.innerHTML = "<p>No results available for this date.</p>";
+			}
+		});
+
+		// Trigger the change event on page load to show the initial result
+		//lotteryDateSelect.dispatchEvent(new Event('change'));
+	});
+	
+	
+	function getHtml() {
+		return `
+<div id="changeGameDiv">
+    <ol class="w-list-unstyled" id="moreRecordsOL">
+        
+                    <li class="archive_list_item">
+                        <div class="archive_list_block lotto_number"  tabindex="0">
+                            <div class="archive_mod_title w-hidden-main w-hidden-medium w-hidden-small">מס' הגרלה</div>
+                            <div class="sr-only">פריט 1, מספר הגרלה </div>
+                           <div>3770</div>
+                        </div>
+                        <div class="archive_list_block date" tabindex="0">
+                            <div class="archive_mod_title date w-hidden-main w-hidden-medium w-hidden-small">תאריך הגרלה</div>
+                            <div class="sr-only">תאריך הגרלה: </div>
+                            <div>11/01/25</div>
+                            <div class="sr-only">שעת הגרלה:</div>
+                            <div>23:28</div>
+                        </div>
+                        <div class="archive_mob_line w-hidden-main w-hidden-medium w-hidden-small"></div>
+                        <div class="archive_list_block strong_number">
+                            <div class="archive_mod_title w-hidden-main w-hidden-medium w-hidden-small">המספר החזק</div>
+                            <div class="cat_data_info archive strong">
+                                <div class="loto_info_num strong archive" tabindex="0">
+                                    <div class="sr-only">המספר החזק: </div>
+                                    <div>6</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="archive_list_block numbers">
+                            <div class="archive_mod_title w-hidden-main w-hidden-medium w-hidden-small">המספרים שעלו בגורל</div>
+                            <div class="sr-only" tabindex="0">המספרים שעלו בגורל:  </div>
+                        
+                            <ol class="cat_data_info archive"  >
+                               <li tabindex="0" class="loto_info_num archive">
+                                    <div>2</div>
+                                </li>
+                                <li tabindex="0" class="loto_info_num archive">
+                                    <div>21</div>
+                                </li>
+                                <li tabindex="0" class="loto_info_num archive">
+                                    <div>25</div>
+                                </li>
+                                <li tabindex="0" class="loto_info_num archive">
+                                    <div>32</div>
+                                </li>
+                                <li tabindex="0" class="loto_info_num archive">
+                                    <div>34</div>
+                                </li>
+                                <li tabindex="0" class="loto_info_num archive">
+                                    <div >35</div>
+                                </li>
+
+                            </ol>
+                        </div>
+                        <div class="archive_mob_line w-hidden-main w-hidden-medium w-hidden-small"></div>
+                        <div class="archive_list_block total">
+                            <div class="archive_mod_title total w-hidden-main w-hidden-medium w-hidden-small">סך הפרסים</div>
+                          <div tabindex="0">
+                              <div class="sr-only">סך הכל זכיות בהגרלה: </div>
+                            <div>19,346,006 ₪</div>
+                              </div>
+                        </div>
+                        <div class='archive_mob_line w-hidden-main w-hidden-medium w-hidden-small'></div><div class='archive_list_block add_info'>
+                            <a href='#' class='archive_add_link lotto' onclick='redirect(3770)'>פרטים נוספים
+                            <div class='sr-only'>הגרלה 3770</div>
+                            </a>
+                            </div>
+                        <div class="archive_list_block video">
+                            
+                            <a href="#" aria-vod="3770" class="archive_video lotto w-inline-block">
+                                <img src="/images/ic_video.svg" alt="לחץ לצפייה בהגרלה 3770"></a>
+                       
+                        </div>
+                    </li>
+            
+    </ol>
+</div>
+`
+	}
+	
+	function getResults(html) {
+	
+	let dom_nodes = $($.parseHTML(html))
+	
+	var elements = dom_nodes.find(".archive_list_item"); 
+	
+	
+	return $.map($(elements), e => ({
+		saleNumber: $($(e).find(".archive_list_block.lotto_number").first().children()[2]).text(),
+		saleDate: $($(e).find(".archive_list_block.date").first().children()[2]).text(),
+		winNumbers: $.map($(elements.find(".loto_info_num.archive")), e => $($(e).children()[0]).text()),
+		strongNumber: $(elements.find(".loto_info_num.strong.archive").first().children()[1]).text()
+		
+	}))
+	
+	let list = elements.map(e => ({number: e}))
+	
+	//var result = [] //Array of objects of info about the elements
+	//for (i in elements){ //assemble our info objects
+	//	var obj = {
+	//		sale_number: elements[i].find(".lotto_number"),
+	//		//sale_date: elements[i].getElementsByClassName("archive_list_block date"),
+	//	}
+	//	result.push(obj); 
+	//}
+	return list
+}
+</script>
