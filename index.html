@@ -8,85 +8,226 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
-<div class="lottery-widget">
-    <h2>Lottery Score</h2>
-    <label for="lottery-date">Select Date:</label>
-    <select id="lottery-date">
-    </select>
-    <div id="lottery-result">
-        <p>Select a date to view the lottery score.</p>
+<div class="tab">
+    <button class="tablinks" onclick="openSale(event, 'lottery')">Lottery</button>
+    <button class="tablinks" onclick="openSale(event, 'chance')">Chance</button>
+    <button class="tablinks" onclick="openSale(event, '777')">777</button>
+</div>
+<div id="lottery" class="tabcontent">
+    <div class="lottery-widget">
+        <h2>Lottery Score</h2>
+        <label for="lottery-date">Select Date:</label>
+        <select id="lottery-date">
+        </select>
+        <div id="lottery-sale-number"></div>
+        <div id="lottery-result">
+            <p>Select a date to view the lottery score.</p>
+        </div>
+        <div id="strong-number"></div>
     </div>
-    <div id="strong-number"></div>
+</div>
+
+<div id="chance" class="tabcontent">
+    <div class="lottery-widget">
+        <h2>Chance Score</h2>
+        <label for="chance-date">Select Date:</label>
+        <select id="chance-date">
+        </select>
+        <div id="chance-sale-number"></div>
+        <div id="chance-result">
+            <p>Select a date to view the chance score.</p>
+        </div>
+    </div>
+</div>
+
+<div id="777" class="tabcontent">
+    <div class="777-widget">
+        <h2>Lottery Score</h2>
+        <label for="777-date">Select Date:</label>
+        <select id="777-date">
+        </select>
+        <div id="777-sale-number"></div>
+        <div id="777-result">
+            <p>Select a date to view the 777 score.</p>
+        </div>
+    </div>
 </div>
 </body>
 </html>
 
 <script>
-    $(document).ready(function () {
-        $(document).ready(function () {
-            let lotteryData = []
+    function fetchData({saleName, dateTo, dateFrom}) {
+        console.log({saleName})
+        let date = new Date()
+        dateTo = dateTo || `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+        dateFrom = '01/01/2025'//dateFrom || `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
 
-            const lotteryResultDiv = document.getElementById('lottery-result');
-            const lotteryDateSelect = document.getElementById('lottery-date');
-            const lotteryStrongResultDiv = document.getElementById('strong-number');
+        $.ajax({
+            type: "get",
+            url: "https://script.google.com/macros/s/AKfycbwpLqUa6KsBJiJ23ktOIP-7KWNq9wLtxl2jewv3DDA7vLAmtSAGmaWuNPKsv2vF8uv3/exec?callback=?",
+            data: {dateFrom, dateTo, saleName: saleName},
+            dataType: "jsonp",
+            jsonp: "jsonp",
+            jsonpCallback: `_${saleName}SetData`
+        });
+    }
+
+    let lotteryDataBySaleName = {
+        lottery: [],
+        chance: [],
+        777: []
+    }
+
+    function _setLottery() {
+
+        let saleName = "lottery"
+
+        function getElements(saleName) {
+            return {
+                lotteryResultDiv: document.getElementById(`${saleName}-result`),
+                lotteryDateSelect: document.getElementById(`${saleName}-date`),
+                lotteryStrongResultDiv: document.getElementById(`${saleName}-number`),
+                lotterySaleNumberDiv: document.getElementById(`${saleName}-sale-number`),
+            }
+        }
+
+
+        ['777', 'chance', 'lottery'].forEach(saleName => {
+            let {lotteryResultDiv, lotteryDateSelect, lotteryStrongResultDiv, lotterySaleNumberDiv} = getElements(saleName)
+            let lotteryData = lotteryDataBySaleName[saleName]
 
             lotteryDateSelect.addEventListener('change', function() {
-                const selectedDate = lotteryDateSelect.value;
-                console.log({selectedDate})
+                console.log('change')
                 console.log({lotteryData})
-                const result = lotteryData.find(data => data.saleDate === selectedDate);
-
+                let selectedDate = lotteryDateSelect.value;
+                let result = lotteryData.find(data => data.saleDate === selectedDate);
+                console.log({selectedDate})
                 console.log({result})
                 if (result) {
-                    lotteryResultDiv.innerHTML = `<p>Lottery Score: <strong>${result.winNumbers}</strong></p>`;
-                    lotteryStrongResultDiv.innerHTML = `<p>Strong Number: <strong>${result.strongNumber}</strong></p>`
-                } else {
-                    lotteryResultDiv.innerHTML = "<p>No results available for this date.</p>";
-                }
-            });
+                        lotterySaleNumberDiv.innerHTML = `<p>Lottery Sale Number: <p><strong>${result.saleNumber}</strong></p>`
 
-            $.ajax({
-                type: "get",
-                url: "https://script.google.com/macros/s/AKfycbyd4wiOitqFuRLXL3Eo9ND-4-9AZjVAvA5cQ8p86oQ9NwKNiuPSdIE1vCdXZLyHIvNp/exec?callback=?",
-                data: {method: "getQuote", format: "jsonp", lang: "en"},
-                dataType: "jsonp",
-                jsonp: "jsonp",
-                jsonpCallback: "myJsonMethod"
-            });
-            window.myJsonMethod = function (results) {
-                lotteryData.push(...results)
-                lotteryData.forEach(function (data) {
-                    const option = document.createElement('option');
-                    option.value = data.saleDate;
-                    option.textContent = data.saleDate;
-                    lotteryDateSelect.appendChild(option);
-                });
+                        if(result.winNumbers) {
+                            lotteryResultDiv.innerHTML = `<p>Lottery Score: <strong>${result.winNumbers}</strong></p>`
+                        }
 
-                lotteryData.forEach(function (data) {
-                    const option = document.createElement('option');
-                    option.value = data.date;
-                    option.textContent = data.date;
-                    lotteryDateSelect.appendChild(option);
-                })
-                lotteryDateSelect.dispatchEvent(new Event('change'));
-            }
-        })
-    })
+                        if(result.cards) {
+                            console.log('yoyo')
+                            lotteryResultDiv.innerHTML = result.cards
+                        }
+                        if (lotteryStrongResultDiv) {
+                            lotteryStrongResultDiv.innerHTML = `<p>Strong Number: <strong>${result.strongNumber}</strong></p>`
+                        }
+                    }
+                    });
+                                })
 
 
-    // function getResults(html) {
-    //
-    //     let dom_nodes = $($.parseHTML(html))
-    //
-    //     var elements = dom_nodes.find(".archive_list_item");
-    //
-    //
-    //     // return $.map($(elements), e => ({
-    //     //     saleNumber: $($(e).find(".archive_list_block.lotto_number").first().children()[2]).text(),
-    //     //     saleDate: $($(e).find(".archive_list_block.date").first().children()[2]).text(),
-    //     //     winNumbers: $.map($(elements.find(".loto_info_num.archive")), e => $($(e).children()[0]).text()),
-    //     //     strongNumber: $(elements.find(".loto_info_num.strong.archive").first().children()[1]).text()
-    //     // }))
-    // }
+                                openSale(event, saleName)
+                                // fetchData({saleName})
+
+                                window._777SetData = function (results) {
+                                    console.log('777')
+                                    let saleName = '777'
+
+                                    let {lotteryResultDiv, lotteryDateSelect} = getElements(saleName)
+                                    let lotteryData = lotteryDataBySaleName[saleName]
+                                    lotteryData.push(...results)
+
+                                    console.log(lotteryData)
+                                    lotteryData.forEach(function (data) {
+                                    const option = document.createElement('option');
+                                    option.value = data.saleDate;
+                                    option.textContent = data.saleDate;
+                                    lotteryDateSelect.appendChild(option);
+                                });
+
+                                    lotteryData.forEach(function (data) {
+                                    const option = document.createElement('option');
+                                    option.value = data.date;
+                                    option.textContent = data.date;
+                                    lotteryDateSelect.appendChild(option);
+                                })
+                                    const selectedDate = lotteryDateSelect.value;
+                                    console.log({selectedDate})
+                                    const result = lotteryData.find(data => data.saleDate === selectedDate);
+                                    console.log({result})
+                                    if (result) {
+                                    lotteryResultDiv.innerHTML = `<p>Lottery Sale Number: <strong>${result.saleNumber}</strong><br>Lottery Score: <strong>${result.winNumbers}</strong></p>`;
+                                }
+                                }
+
+                                window._chanceSetData = function (results) {
+                                    let saleName = 'chance'
+                                    let {lotteryDateSelect} = getElements(saleName)
+
+                                    let lotteryData = lotteryDataBySaleName[saleName]
+
+                                    lotteryData.push(...results)
+                                    lotteryData.forEach(function (data) {
+                                    const option = document.createElement('option');
+                                    option.value = data.saleDate;
+                                    option.textContent = data.saleDate;
+                                    lotteryDateSelect.appendChild(option);
+                                });
+
+                                    lotteryData.forEach(function (data) {
+                                    const option = document.createElement('option');
+                                    option.value = data.date;
+                                    option.textContent = data.date;
+                                    lotteryDateSelect.appendChild(option);
+                                })
+                                    lotteryDateSelect.dispatchEvent(new Event('change'));
+                                }
+
+                                window._lotterySetData = function (results) {
+                                    let saleName = 'lottery'
+                                    let {lotteryDateSelect} = getElements(saleName)
+
+                                    console.log({results})
+                                    let lotteryData = lotteryDataBySaleName[saleName]
+
+                                    lotteryData.push(...results)
+                                    lotteryData.forEach(function (data) {
+                                    const option = document.createElement('option');
+                                    option.value = data.saleDate;
+                                    option.textContent = data.saleDate;
+                                    lotteryDateSelect.appendChild(option);
+                                });
+
+                                    lotteryData.forEach(function (data) {
+                                    const option = document.createElement('option');
+                                    option.value = data.date;
+                                    option.textContent = data.date;
+                                    lotteryDateSelect.appendChild(option);
+                                })
+                                    lotteryDateSelect.dispatchEvent(new Event('change'));
+                                }
+                                }
+                                $(document).ready(function () {
+                                    $(document).ready(function () {
+                                        _setLottery()
+                                    })
+                                })
+
+                                function openSale(evt, saleName) {
+                                    var i, tabcontent, tablinks;
+                                    tabcontent = document.getElementsByClassName("tabcontent");
+                                    for (i = 0; i < tabcontent.length; i++) {
+                                    tabcontent[i].style.display = "none";
+                                }
+                                    tablinks = document.getElementsByClassName("tablinks");
+                                    for (i = 0; i < tablinks.length; i++) {
+                                    tablinks[i].className = tablinks[i].className.replace(" active", "");
+                                }
+                                    document.getElementById(saleName).style.display = "block";
+                                    // evt.currentTarget.className += " active";
+
+                                    let lotteryData = lotteryDataBySaleName[saleName]
+                                    if (lotteryData.length === 0) {
+                                        fetchData({saleName})
+                                    }
+                                }
+
+
 </script>
 
