@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <base target="/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lottery Score Widget</title>
@@ -137,7 +138,7 @@
                     }
 
                     if (result.cards) {
-                        lotteryResultDiv.innerHTML = result.cards.map(c => `<div class="card"><img class="card_icon" src="${c.simbol}"><br><span>${c.letter}</span></div>`).join('<br>')
+                        lotteryResultDiv.innerHTML = result.cards.map(c => `<div class="card"><img class="card_icon" src="./${c.simbol}"><br><span>${c.letter}</span></div>`).join('<br>')
                     }
                     if (lotteryStrongResultDiv) {
                         lotteryStrongResultDiv.innerHTML = `<p>Strong Number: <div><strong class="circle">${result.strongNumber}</strong></div></p>`
