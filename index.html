@@ -59,17 +59,37 @@
     function fetchData({saleName, dateTo, dateFrom}) {
         console.log({saleName})
         let date = new Date()
-        dateTo = dateTo || `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
-        dateFrom = '01/01/2025'//dateFrom || `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+        let defaultDateFromBySaleType = {
+            _lottery: subtractMonths(date, 6),
+            _777: subtractMonths(date, 1),
+            _chance: subtractMonths(date, 1)
+        }
+
+        function getFormattedDate(date) {
+            return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+        }
+
+        function subtractMonths(date, amount) {
+            let d = new Date(date);
+            d.setMonth(date.getMonth() - amount);
+            return d
+        }
+
+
+        dateTo = getFormattedDate(dateTo || date)
+        dateFrom = getFormattedDate(dateFrom || defaultDateFromBySaleType[`_${saleName}`])//dateFrom || `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear() - 1}`
+
+
 
         $.ajax({
             type: "get",
-            url: "https://script.google.com/macros/s/AKfycbwpLqUa6KsBJiJ23ktOIP-7KWNq9wLtxl2jewv3DDA7vLAmtSAGmaWuNPKsv2vF8uv3/exec?callback=?",
+            url: "https://script.google.com/macros/s/AKfycbwN9HOoGgpW2NmXUdAThslm-7gy0UxVBEQBanLfxRjUj4GOpwCF_SHiTSTMraiKKQLn/exec/exec?callback=?",
             data: {dateFrom, dateTo, saleName: saleName},
             dataType: "jsonp",
             jsonp: "jsonp",
             jsonpCallback: `_${saleName}SetData`
         });
+        // <div class=\"chance_card_icon archive\"><img src=\"/images/ic_card_clubs.png\" alt=\"תלתן\"></div>\n
     }
 
     let lotteryDataBySaleName = {
@@ -111,8 +131,7 @@
                         }
 
                         if(result.cards) {
-                            console.log('yoyo')
-                            lotteryResultDiv.innerHTML = result.cards
+                            lotteryResultDiv.innerHTML = result.cards.map(c => `<div><img src="${c.simbol}"><br><span>${c.letter}</span></div>`).join('<br>')
                         }
                         if (lotteryStrongResultDiv) {
                             lotteryStrongResultDiv.innerHTML = `<p>Strong Number: <strong>${result.strongNumber}</strong></p>`
