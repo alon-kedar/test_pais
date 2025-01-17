@@ -8,7 +8,67 @@ body {
     background-color: #f4f4f4;
 }
 
-.lottery-widget {
+#chance-result {
+    display: flex;
+}
+
+.flex {
+    display: flex;
+}
+
+.circle {
+    color: #fff;
+    background-color: #e31d1a;
+    border-radius: 50%;
+    justify-content: center;
+    align-items: center;
+    width: 46px;
+    height: 46px;
+    margin-left: 1.2%;
+    margin-right: 1.2%;
+    padding-bottom: 1px;
+    font-family: Oswald, sans-serif;
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 28px;
+    display: flex;
+}
+
+.card {
+    text-align: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 20%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    font-family: Oswald, sans-serif;
+    font-size: 28px;
+    line-height: 36px;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    border-radius: 5px;
+    /*justify-content: space-around;*/
+    /*align-items: flex-start;*/
+    /*margin-bottom: 5px;*/
+    /*padding: 10px 5px;*/
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .5)
+}
+
+.card_icon {
+    width: 60%;
+    margin-bottom: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+
+
+.box {
     background-color: white;
     padding: 20px;
     border-radius: 8px;
@@ -24,7 +84,7 @@ select {
     border-radius: 4px;
 }
 
-#lottery-result {
+#lottery-result, #777-result, #chance-result {
     margin-top: 20px;
     font-size: 18px;
     font-weight: bold;
@@ -35,10 +95,15 @@ select {
     overflow: hidden;
     border: 1px solid #ccc;
     background-color: #f1f1f1;
+
+    display: flex;
+    justify-content: space-around;
+
 }
 
 /* Style the buttons inside the tab */
 .tab button {
+    width: 120px;
     background-color: inherit;
     float: left;
     border: none;
@@ -47,6 +112,7 @@ select {
     padding: 14px 16px;
     transition: 0.3s;
     font-size: 17px;
+    text-align: center;
 }
 
 /* Change background color of buttons on hover */
